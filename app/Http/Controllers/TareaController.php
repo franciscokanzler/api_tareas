@@ -10,9 +10,12 @@ use Illuminate\Support\Facades\Log;
 class TareaController extends Controller
 {
     //método para mostras todas las tareas registradas
-    public function index(){
+    public function index(Request $request, $columna = null, $orden = null)
+    {
         try {
-            $tareas = Tarea::paginate(5);
+            $columna = $request->columna ?? 'id';
+            $orden = $request->orden ?? 'asc';
+            $tareas = Tarea::orderBy($columna, $orden)->paginate(5);
             return response()->json([
                 'data' => $tareas,
             ], 200);
@@ -27,7 +30,8 @@ class TareaController extends Controller
     }
 
     //método para registrar nueva tarea
-    public function store(Request $request){
+    public function store(Request $request)
+    {
         $rules = [
             'titulo' => 'required',
             'descripcion' => 'required',
@@ -63,14 +67,15 @@ class TareaController extends Controller
     }
 
     //método para consultar una tarea en especifico
-    public function show($id){
+    public function show($id)
+    {
         try {
-            $tarea = Tarea::where('id',$id)->first();
+            $tarea = Tarea::where('id', $id)->first();
             if ($tarea != null) {
                 return response()->json([
                     'data' => $tarea,
                 ], 200);
-            }else{
+            } else {
                 return response()->json([
                     'mensaje' => 'Estimado usuario, el usuario al que hace referencia no esta registrado.',
                 ], 400);
@@ -94,12 +99,12 @@ class TareaController extends Controller
     public function edit($id)
     {
         try {
-            $tarea = Tarea::where('id',$id)->first();
+            $tarea = Tarea::where('id', $id)->first();
             if ($tarea != null) {
                 return response()->json([
                     'data' => $tarea,
                 ], 200);
-            }else{
+            } else {
                 return response()->json([
                     'mensaje' => 'Estimado usuario, el usuario al que hace referencia no esta registrado.',
                 ], 400);
@@ -115,7 +120,8 @@ class TareaController extends Controller
     }
 
     //método para actualizar una tarea
-    public function update(Request $request, $id){
+    public function update(Request $request, $id)
+    {
         $rules = [
             'titulo' => 'required',
             'descripcion' => 'required',
@@ -135,13 +141,13 @@ class TareaController extends Controller
         }
 
         try {
-            $tareas = Tarea::where('id',$id)->first();
+            $tareas = Tarea::where('id', $id)->first();
             if ($tareas != null) {
                 $tareas->update($request->all());
                 return response()->json([
                     'data' => $tareas,
                 ], 200);
-            }else{
+            } else {
                 return response()->json([
                     'mensaje' => 'Estimado usuario, el usuario al que hace referencia no esta registrado.',
                 ], 400);
@@ -157,15 +163,16 @@ class TareaController extends Controller
     }
 
     //método para eliminar(fisicamente) una tarea en especifico.
-    public function destroy($id){
+    public function destroy($id)
+    {
         try {
-            $tareas = Tarea::where('id',$id)->first();
+            $tareas = Tarea::where('id', $id)->first();
             if ($tareas != null) {
                 $tareas->delete();
                 return response()->json([
                     'data' => $tareas,
                 ], 200);
-            }else{
+            } else {
                 return response()->json([
                     'mensaje' => 'Estimado usuario, el usuario al que hace referencia no esta registrado.',
                 ], 400);
